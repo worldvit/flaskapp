@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 및 회원가입</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f8f9fa; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .auth-wrapper { max-width: 420px; width: 100%; padding: 2rem; }
+        .auth-container { border-radius: 8px; background-color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden; }
+        .tab-menu { display: flex; }
+        .tab-button { flex: 1; padding: 1rem; border: none; background-color: #e9ecef; cursor: pointer; font-size: 1.1em; font-weight: 500; color: #6c757d; transition: all 0.2s ease; }
+        .tab-button.active { background-color: #fff; color: #007bff; }
+        .tab-content { display: none; padding: 2rem; }
+        .tab-content.active { display: block; }
+        .auth-form label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; }
+        .auth-form input { width: 100%; padding: 12px; margin-bottom: 1rem; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 1em; }
+        .btn { display: block; width: 100%; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; font-weight: 500; text-align: center; color: white; margin-top: 10px; }
+        .btn-login { background-color: #007bff; }
+        .btn-register { background-color: #28a745; }
+        .password-help { text-align: right; font-size: 0.9em; margin-bottom: 1.5rem; }
+        .password-help a { color: #007bff; text-decoration: none; }
+        .message { padding: 10px 15px; margin-bottom: 1rem; border-radius: 4px; text-align: center; }
+        .error { background-color: #f8d7da; color: #721c24; }
+        .success { background-color: #d4edda; color: #155724; }
+    </style>
+</head>
+<body>
+<div class="auth-wrapper">
+    <div class="auth-container">
+        <div class="tab-menu">
+            <button class="tab-button active" onclick="openTab('login')">로그인</button>
+            <button class="tab-button" onclick="openTab('register')">회원가입</button>
+        </div>
+        <div id="login" class="tab-content active">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <form class="auth-form" action="{{ url_for('login') }}" method="post">
+                <div>
+                    <label for="username_login">아이디:</label>
+                    <input type="text" id="username_login" name="username" required>
+                </div>
+                <div>
+                    <label for="password_login">비밀번호:</label>
+                    <input type="password" id="password_login" name="password" required>
+                </div>
+                <div class="password-help">
+                    <a href="{{ url_for('forgot_password') }}">비밀번호를 잊으셨나요?</a>
+                </div>
+                <button type="submit" class="btn btn-login">로그인</button>
+            </form>
+        </div>
+        <div id="register" class="tab-content">
+            <form class="auth-form" action="{{ url_for('register') }}" method="post">
+                <div>
+                    <label for="username_register">아이디:</label>
+                    <input type="text" id="username_register" name="username" required>
+                </div>
+                <div>
+                    <label for="phone_number_register">핸드폰 번호:</label>
+                    <input type="tel" id="phone_number_register" name="phone_number" placeholder="'-' 없이 숫자만 입력" required>
+                </div>
+                <div>
+                    <label for="password_register">비밀번호:</label>
+                    <input type="password" id="password_register" name="password" required>
+                    <p class="password-rules" style="font-size:0.8em; color:#6c757d; margin-top:-10px;">8자 이상, 영문 대/소문자, 숫자, 특수문자를 모두 포함해주세요.</p>
+                </div>
+                <button type="submit" class="btn btn-register">회원가입</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    function openTab(tabName) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tab-content");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tab-button");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].className = tablinks[i].className.replace(" active", "");
+        }
+        document.getElementById(tabName).style.display = "block";
+        event.currentTarget.className += " active";
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+        const messages = document.querySelector('.message');
+        if (messages && messages.classList.contains('success')) {
+            openTab('login');
+        }
+    });
+</script>
+</body>
+</html>

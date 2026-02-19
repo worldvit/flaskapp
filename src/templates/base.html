@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %} My Flask App{% endblock %}</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; margin: 0; background-color: #f8f9fa; color: #212529; }
+        .main-container { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background-color: #fff; border-bottom: 1px solid #dee2e6; margin-bottom: 30px; }
+        .main-header h2 { margin: 0; font-size: 1.5em; color: #343a40; }
+        .user-nav { display: flex; align-items: center; gap: 15px; }
+        .user-nav span { font-weight: 500; color: #495057; }
+        .user-nav a { text-decoration: none; color: #007bff; font-size: 0.9em; padding: 6px 12px; border: 1px solid #007bff; border-radius: 20px; transition: all 0.2s ease-in-out; }
+        .user-nav a.logout { color: #dc3545; border-color: #dc3545; }
+        .user-nav a:hover { background-color: #007bff; color: white; }
+        .user-nav a.logout:hover { background-color: #dc3545; color: white; }
+        .message { padding: 10px 15px; margin-bottom: 15px; border-radius: 4px; text-align: center; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .content-box { padding: 30px; border: 1px solid #dee2e6; border-radius: 8px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header class="main-header">
+            <h2>{% block header_title %}{% endblock %}</h2>
+            {% if session.loggedin %}
+            <nav class="user-nav">
+                <span>환영합니다, <strong>{{ session.username }}</strong>님!</span>
+                {% if request.path != url_for('index') %}
+                <a href="{{ url_for('index') }}">대시보드</a>
+                {% endif %}
+                {% if session.username in ['kevin', 'kwangjin'] %}
+                <a href="{{ url_for('admin_dashboard') }}" class="admin">관리자</a>
+                {% endif %}
+                <a href="{{ url_for('logout') }}" class="logout">로그아웃</a>
+            </nav>
+            {% endif %}
+        </header>
+        <main class="content-box">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

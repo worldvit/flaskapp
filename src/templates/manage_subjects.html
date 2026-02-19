@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}과목 관리{% endblock %}
+{% block header_title %}과목 관리 (관리자){% endblock %}
+{% block content %}
+<style>
+.add-form { display: flex; gap: 10px; margin-bottom: 30px; }
+.add-form input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+.add-form button { padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+.subject-table { width: 100%; border-collapse: collapse; }
+.subject-table th, .subject-table td { padding: 12px; border-bottom: 1px solid #dee2e6; text-align: left; }
+.subject-table th { background-color: #f8f9fa; }
+.btn-edit { background-color: #ffc107; color: #333; padding: 5px 10px; text-decoration: none; border-radius: 3px; font-size: 0.9em; }
+.btn-delete { background-color: #dc3545; color: white; padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; font-size: 0.9em; }
+</style>
+
+<div style="margin-bottom: 20px;">
+    <a href="{{ url_for('admin_dashboard') }}" style="color: #6c757d; text-decoration: none;">&larr; 관리자 홈으로</a>
+</div>
+
+<h4>새 과목 추가</h4>
+<form class="add-form" action="{{ url_for('manage_subjects') }}" method="post">
+    <input type="text" name="name" placeholder="과목 이름 입력" required>
+    <button type="submit">과목 추가</button>
+</form>
+
+<h4>등록된 과목 목록</h4>
+<table class="subject-table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>과목명</th>
+            <th>관리</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for subject in subjects %}
+        <tr>
+            <td>{{ subject.id }}</td>
+            <td>{{ subject.name }}</td>
+            <td style="display: flex; gap: 5px;">
+                <a href="{{ url_for('edit_subject', subject_id=subject.id) }}" class="btn-edit">수정</a>
+                <form action="{{ url_for('delete_subject', subject_id=subject.id) }}" method="post" onsubmit="return confirm('정말로 이 과목과 모든 관련 콘텐츠를 삭제하시겠습니까?');" style="margin:0;">
+                    <button type="submit" class="btn-delete">삭제</button>
+                </form>
+            </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="3" style="text-align: center;">등록된 과목이 없습니다.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

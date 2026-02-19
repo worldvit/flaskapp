@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ year }}년 {{ month }}월 일기장{% endblock %}
+{% block header_title %}{{ session.username }}님의 일기장{% endblock %}
+{% block content %}
+<style>
+.calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 0.5rem; }
+.calendar-nav h3 { margin: 0; font-size: 1.5em; color: #343a40; }
+.calendar-nav a { text-decoration: none; color: #007bff; font-weight: 500; padding: 0.5rem 1rem; border: 1px solid #dee2e6; border-radius: 0.3rem; background-color: #fff; transition: all 0.2s ease; }
+.calendar-nav a:hover { background-color: #007bff; color: white; border-color: #007bff; }
+.calendar-table { width: 100%; border-collapse: collapse; table-layout: fixed; border: 1px solid #dee2e6; }
+.calendar-table th, .calendar-table td { border: 1px solid #dee2e6; text-align: center; padding: 0; height: 100px; vertical-align: top; }
+.calendar-table th { background-color: #f8f9fa; padding: 10px; font-weight: 600; color: #495057; }
+.calendar-table td a { display: block; height: 100%; text-decoration: none; color: #212529; padding: 8px; box-sizing: border-box; transition: background-color 0.2s ease; }
+.calendar-table td a:hover { background-color: #e9ecef; }
+.calendar-table td.today a { background-color: rgba(0, 123, 255, 0.1); }
+.calendar-table td.has-diary a { background-color: rgba(40, 167, 69, 0.15); }
+.day-number { font-size: 1.1em; text-align: left; }
+.diary-status { display: block; margin-top: 2.5em; font-size: 0.8em; color: #28a745; font-weight: bold; }
+</style>
+<div class="calendar-nav">
+    <a href="{{ url_for('diary_calendar', year=prev_year, month=prev_month) }}">&lt; 이전 달</a>
+    <h3>{{ year }}년 {{ month }}월</h3>
+    <a href="{{ url_for('diary_calendar', year=next_year, month=next_month) }}">다음 달 &gt;</a>
+</div>
+<table class="calendar-table">
+    <thead>
+        <tr>
+            <th style="color: #dc3545;">일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th style="color: #007bff;">토</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for week in month_days %}
+        <tr>
+            {% for day in week %}
+            {% if day == 0 %}
+            <td style="background-color: #f8f9fa;"></td>
+            {% else %}
+            {% set date_str = '%04d-%02d-%02d' % (year, month, day) %}
+            <td class="{% if current_day and day == current_day %}today{% endif %} {% if date_str in diary_dates %}has-diary{% endif %}">
+                <a href="{{ url_for('diary_entry', date_str=date_str) }}">
+                    <div class="day-number">{{ day }}</div>
+                    {% if date_str in diary_dates %}
+                    <span class="diary-status">작성됨</span>
+                    {% endif %}
+                </a>
+            </td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

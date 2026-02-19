@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}{{ session.username}}님의 To-Do List{% endblock %}
+{% block header_title %} {{ session.username }}님의 To-Do List{% endblock %}
+{% block content %}
+<style>
+.section { background-color: #f8f9fa; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #dee2e6; }
+.section h3 { margin-top: 0; margin-bottom: 1rem; border-bottom: 1px solid #ced4da; padding-bottom: 0.5rem; }
+.todo-form { display: flex; flex-wrap: wrap; gap: 15px; align-items: flex-end; }
+.form-group { flex: 1; min-width: 120px; }
+.form-group label { display: block; font-size: 0.9em; color: #555; margin-bottom: 5px; font-weight: 500; }
+.form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; }
+.btn { padding: 10px 15px; border-radius: 4px; border: none; color: white; font-weight: 500; cursor: pointer; }
+.btn-add { background-color: #28a745; }
+.btn-filter { background-color: #007bff; }
+.todo-table { width: 100%; border-collapse: collapse; }
+.todo-table th, .todo-table td { border-bottom: 1px solid #dee2e6; padding: 12px; text-align: left; vertical-align: middle; }
+.todo-table th { background-color: #f8f9fa; font-weight: 600; }
+.task-completed { text-decoration: line-through; color: #888; }
+.status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.8em; font-weight: bold; color: white; }
+.status-badge.미완료 {background-color: #6c757d;}
+.status-badge.진행중 {background-color: #007bff;}
+.status-badge.완료 { background-color: #28a745;}
+.status-badge.기간연장 {background-color: #ffc107; color: #333;}
+.todo-actions { display: flex; gap: 5px; }
+.todo-actions .btn-action { padding: 5px 10px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8em; color: white; text-decoration: none; }
+.btn-action.complete { background-color: #28a745; }
+.btn-action.restore { background-color: #6c757d; }
+.btn-action.reschedule { background-color: #ffc107; color: #333; }
+.btn-action.delete { background-color: #dc3545; }
+</style>
+<div class="section">
+    <h3>새로운 할 일 추가</h3>
+    <form action="{{ url_for('add_todo') }}" method="post" class="todo-form">
+        <div class="form-group" style="flex-basis: 40%;">
+            <label for="task">할 일:</label>
+            <input type="text" id="task" name="task" required>
+        </div>
+        <div class="form-group">
+            <label for="due_date">마감일:</label>
+            <input type="date" id="due_date" name="due_date">
+        </div>
+        <div class="form-group">
+            <label for="status">상태:</label>
+            <select id="status" name="status">
+                <option value="미완료">미완료</option>
+                <option value="진행중">진행중</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-add">추가</button>
+    </form>
+</div>
+<div class="section">
+    <h3>할 일 목록</h3>
+    <form action="{{ url_for('todos_list') }}" method="get" class="todo-form" style="margin-bottom: 1.5rem;">
+        <div class="form-group">
+            <label for="status_filter">상태 필터:</label>
+            <select id="status_filter" name="status">
+                <option value="all" {% if status_filter == 'all' %}selected{% endif %}>모든 상태</option>
+                {% for status in all_statuses %}<option value="{{ status }}" {% if status_filter == status %}selected{% endif %}>{{ status }}</option>{% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="flex-basis: 40%;">
+            <label for="search_query">검색:</label>
+            <input type="text" id="search_query" name="query" value="{{ search_query if search_query else '' }}">
+        </div>
+        <button type="submit" class="btn btn-filter">검색/필터링</button>
+    </form>
+    <table class="todo-table">
+        <thead>
+            <tr>
+                <th style="width: 40%;">할 일</th><th>마감일</th><th>상태</th><th>작성일</th><th>관리</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for todo in todos %}
+            <tr>
+                <td class="{{ 'task-completed' if todo.status == '완료' else '' }}">{{ todo.task }}</td>
+                <td>{{ todo.due_date if todo.due_date else '없음' }}</td>
+                <td><span class="status-badge {{ todo.status }}">{{ todo.status }}</span></td>
+                <td>{{ todo.created_at.strftime('%Y-%m-%d') }}</td>
+                <td class="todo-actions">
+                    {% if todo.status == '완료' %}
+                    <form action="{{ url_for('update_todo_status', todo_id=todo.id, new_status='미완료') }}" method="post"><button type="submit" class="btn-action restore">복원</button></form>
+                    {% else %}
+                    <form action="{{ url_for('update_todo_status', todo_id=todo.id, new_status='완료') }}" method="post"><button type="submit" class="btn-action complete">완료</button></form>
+                    {% endif %}
+                    <a href="{{ url_for('reschedule_todo_calendar', todo_id=todo.id) }}" class="btn-action reschedule">연장</a>
+                    <form action="{{ url_for('delete_todo', todo_id=todo.id) }}" method="post" onsubmit="return confirm('정말로 이 할 일을 삭제하시겠습니까?');"><button type="submit" class="btn-action delete">삭제</button></form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" style="text-align: center; padding: 2rem;">조건에 맞는 할 일이 없습니다.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

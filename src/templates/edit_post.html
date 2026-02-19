@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}게시글 수정{% endblock %}
+{% block header_title %}게시글 수정{% endblock %}
+{% block content %}
+<style>
+.post-form label { display: block; margin-bottom: 5px; font-weight: bold; }
+.post-form input[type="text"], .post-form textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+.post-form textarea { height: 300px; resize: vertical; }
+.btn-submit { background-color: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 1em; }
+.btn-cancel { background-color: #6c757d; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-size: 1em; margin-right: 10px; }
+</style>
+<form class="post-form" action="{{ url_for('edit_post', post_id=post.id) }}" method="post">
+    <div>
+        <label for="title">제목:</label>
+        <input type="text" id="title" name="title" value="{{ post.title }}" required>
+    </div>
+    <div>
+        <label for="content">내용:</label>
+        <textarea id="content" name="content" required>{{ post.content }}</textarea>
+    </div>
+    <div>
+        <a href="{{ url_for('view_post', post_id=post.id) }}" class="btn-cancel">취소</a>
+        <button type="submit" class="btn-submit">수정 완료</button>
+    </div>
+</form>
+{% endblock %}

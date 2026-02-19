@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}{{ subject.name }} - 학습 콘텐츠{% endblock %}
+{% block header_title %}{{ subject.name }}{% endblock %}
+{% block content %}
+<style>
+.content-section { margin-bottom: 30px; }
+.content-section h3 { border-bottom: 2px solid #007bff; padding-bottom: 10px; color: #333; }
+.content-list { list-style: none; padding: 0; }
+.content-list li { padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+.content-list a { text-decoration: none; color: #007bff; font-weight: 500; font-size: 1.1em; }
+.status-badge { font-size: 0.8em; padding: 3px 8px; border-radius: 10px; color: white; margin-left: 10px; }
+.status-active { background-color: #28a745; }
+.status-inactive { background-color: #dc3545; }
+.btn-toggle { background-color: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
+</style>
+
+<div class="content-section">
+    <h3>📖 이론 콘텐츠</h3>
+    <ul class="content-list">
+        {% for item in theory_contents %}
+        <li>
+            <div>
+                <a href="{{ url_for('view_content', content_id=item.id) }}">{{ item.title }}</a>
+                {% if session.username in ['kevin', 'kwangjin'] %}
+                <span class="status-badge {{ 'status-active' if item.is_active else 'status-inactive' }}">{{ '활성' if item.is_active else '비활성' }}</span>
+                {% endif %}
+            </div>
+            {% if session.username in ['kevin', 'kwangjin'] %}
+            <form action="{{ url_for('toggle_content_status', content_id=item.id) }}" method="post" style="margin:0;">
+                <button type="submit" class="btn-toggle">{{ '비활성화' if item.is_active else '활성화' }}</button>
+            </form>
+            {% endif %}
+        </li>
+        {% else %}
+        <li>등록된 이론 콘텐츠가 없습니다.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="content-section">
+    <h3>💻 실습 콘텐츠</h3>
+    <ul class="content-list">
+        {% for item in lab_contents %}
+        <li>
+            <div>
+                <a href="{{ url_for('view_content', content_id=item.id) }}">{{ item.title }}</a>
+                {% if session.username in ['kevin', 'kwangjin'] %}
+                <span class="status-badge {{ 'status-active' if item.is_active else 'status-inactive' }}">{{ '활성' if item.is_active else '비활성' }}</span>
+                {% endif %}
+            </div>
+            {% if session.username in ['kevin', 'kwangjin'] %}
+            <form action="{{ url_for('toggle_content_status', content_id=item.id) }}" method="post" style="margin:0;">
+                <button type="submit" class="btn-toggle">{{ '비활성화' if item.is_active else '활성화' }}</button>
+            </form>
+            {% endif %}
+        </li>
+        {% else %}
+        <li>등록된 실습 콘텐츠가 없습니다.</li>
+        {% endfor %}
+    </ul>
+</div>
+<div style="margin-top: 20px;">
+    <a href="{{ url_for('study_list') }}" style="color: #6c757d; text-decoration: none;">&larr; 과목 목록으로 돌아가기</a>
+</div>
+{% endblock %}

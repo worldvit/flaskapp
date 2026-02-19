@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}마감일 연장{% endblock %}
+{% block header_title %}할 일 마감일 변경{% endblock %}
+{% block content %}
+<style>
+.todo-info { background-color: #e9ecef; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+.todo-info h4 { margin: 0 0 10px 0; color: #333; }
+.calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+.calendar-nav a { text-decoration: none; color: #007bff; font-weight: bold; }
+.calendar-table { width: 100%; border-collapse: collapse; text-align: center; }
+.calendar-table th, .calendar-table td { border: 1px solid #dee2e6; padding: 15px 10px; }
+.calendar-table th { background-color: #f8f9fa; }
+.calendar-table td.today { background-color: rgba(0,123,255,0.1); }
+.calendar-table td form { margin: 0; }
+.btn-date { width: 100%; padding: 10px; border: none; background: none; cursor: pointer; border-radius: 4px; font-size: 1em; transition: background-color 0.2s; }
+.btn-date:hover { background-color: #007bff; color: white; }
+</style>
+
+<div class="todo-info">
+    <h4>선택된 할 일: {{ todo_item.task }}</h4>
+    <p>현재 마감일: {{ todo_item.due_date if todo_item.due_date else '없음' }}</p>
+</div>
+
+<div class="calendar-nav">
+    <a href="{{ url_for('reschedule_todo_calendar', todo_id=todo_item.id, year=prev_year, month=prev_month) }}">&lt; 이전 달</a>
+    <h3>{{ year }}년 {{ month }}월</h3>
+    <a href="{{ url_for('reschedule_todo_calendar', todo_id=todo_item.id, year=next_year, month=next_month) }}">다음 달 &gt;</a>
+</div>
+
+<table class="calendar-table">
+    <thead>
+        <tr>
+            <th style="color: #dc3545;">일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th style="color: #007bff;">토</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for week in month_days %}
+        <tr>
+            {% for day in week %}
+            {% if day == 0 %}
+            <td style="background-color: #f8f9fa;"></td>
+            {% else %}
+            {% set date_str = '%04d-%02d-%02d' % (year, month, day) %}
+            <td class="{% if current_day and day == current_day %}today{% endif %}">
+                <form action="{{ url_for('set_new_due_date', todo_id=todo_item.id) }}" method="post">
+                    <input type="hidden" name="new_due_date" value="{{ date_str }}">
+                    <button type="submit" class="btn-date" onclick="return confirm('{{ date_str }} 로 마감일을 변경하시겠습니까?');">{{ day }}</button>
+                </form>
+            </td>
+            {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<div style="margin-top: 20px;">
+    <a href="{{ url_for('todos_list') }}" style="color: #6c757d; text-decoration: none;">&larr; 돌아가기</a>
+</div>
+{% endblock %}

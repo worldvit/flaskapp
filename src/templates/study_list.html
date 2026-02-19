@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}학습 과목 목록{% endblock %}
+{% block header_title %}학습 과목{% endblock %}
+{% block content %}
+<style>
+.subject-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+.subject-card { background-color: white; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+.subject-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+.subject-card a { text-decoration: none; color: #333; font-size: 1.2em; font-weight: bold; display: block; }
+</style>
+<div class="subject-grid">
+    {% for subject in subjects %}
+    <div class="subject-card">
+        <a href="{{ url_for('subject_detail', subject_id=subject.id) }}">{{ subject.name }}</a>
+    </div>
+    {% else %}
+    <p style="text-align: center; width: 100%;">등록된 과목이 없습니다.</p>
+    {% endfor %}
+</div>
+{% endblock %}

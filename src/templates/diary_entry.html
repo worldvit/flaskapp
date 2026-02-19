@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ date_str }} 일기{% endblock %}
+{% block header_title %} {{ date_str }} 일기{% endblock %}
+{% block content %}
+<style>
+.diary-form label { display: block; margin-bottom: 8px; font-weight: 600; color: #495057; }
+.diary-form input[type="text"], .diary-form textarea { width: 100%; padding: 12px; margin-bottom: 1.5rem; border: 1px solid #ced4da; border-radius: 4px; box-sizing: border-box; font-size: 1em; }
+.diary-form input[type="text"]:focus, .diary-form textarea:focus { border-color: #80bdff; outline: 0; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); }
+.diary-form textarea { min-height: 350px; resize: vertical; line-height: 1.6; }
+.form-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 1rem; }
+.form-actions button, .form-actions a { padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; text-decoration: none; color: white; font-weight: 500; font-size: 0.95em; }
+.btn-submit { background-color: #007bff; }
+.btn-submit:hover { background-color: #0056b3; }
+.btn-cancel { background-color: #6c757d; }
+.btn-cancel:hover { background-color: #5a6268; }
+</style>
+<form class="diary-form" action="{{ url_for('diary_entry', date_str=date_str) }}" method="post">
+    <div>
+        <label for="title">제목 (선택 사항):</label>
+        <input type="text" id="title" name="title" value="{{ diary.title if diary else '' }}">
+    </div>
+    <div>
+        <label for="content">내용:</label>
+        <textarea id="content" name="content" required>{{ diary.content if diary else '' }}</textarea>
+    </div>
+    <div class="form-actions">
+        <a href="{{ url_for('diary_calendar', year=date_str[:4]|int, month=date_str[5:7]|int) }}" class="btn-cancel">달력으로 돌아가기</a>
+        <button type="submit" class="btn-submit">일기 저장</button>
+    </div>
+</form>
+{% endblock %}

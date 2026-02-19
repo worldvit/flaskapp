@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}{{ content.title }}{% endblock %}
+{% block header_title %}{{ content.subject_name }} - {{ content.content_type }}{% endblock %}
+{% block content %}
+<style>
+.content-header { margin-bottom: 20px; border-bottom: 1px solid #dee2e6; padding-bottom: 15px; }
+.content-title { font-size: 1.8em; color: #333; margin: 0 0 10px 0; }
+.content-meta { color: #6c757d; font-size: 0.9em; }
+.content-body { line-height: 1.8; font-size: 1.1em; color: #212529; white-space: pre-wrap; background-color: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e9ecef; }
+</style>
+
+<div class="content-header">
+    <h2 class="content-title">{{ content.title }}</h2>
+    <div class="content-meta">작성일: {{ content.created_at.strftime('%Y-%m-%d') }}</div>
+</div>
+
+<div class="content-body">{{ content.body }}</div>
+
+<div style="margin-top: 30px;">
+    <a href="{{ url_for('subject_detail', subject_id=content.subject_id) }}" style="padding: 10px 20px; background-color: #007bff; color: white; text-decoration: none; border-radius: 5px;">목록으로 돌아가기</a>
+</div>
+{% endblock %}

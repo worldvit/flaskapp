@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}커뮤니티 게시판{% endblock %}
+{% block header_title %}Community Board{% endblock %}
+{% block content %}
+<style>
+.action-buttons { margin-bottom: 20px; }
+.write-button { padding: 8px 15px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px; }
+.search-form { margin-bottom: 20px; }
+.post-item { border: 1px solid #eee; padding: 15px; margin-bottom: 10px; border-radius: 5px; background-color: #f9f9f9; }
+.post-item h3 { margin-top: 0; }
+.post-item h3 a { color: #007bff; text-decoration: none; }
+.post-meta { font-size: 0.9em; color: #777; }
+</style>
+<div class="action-buttons">
+    <a href="{{ url_for('write_post') }}" class="write-button">새 글 작성</a>
+</div>
+<div class="search-form">
+    <form action="{{ url_for('board_list') }}" method="get">
+        <input type="text" name="query" placeholder="제목 또는 내용으로 검색..." value="{{ search_query if search_query else '' }}" style="width: 70%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        <button type="submit" style="width: 25%; padding: 8px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">검색</button>
+    </form>
+</div>
+{% if posts %}
+{% for post in posts %}
+<div class="post-item">
+    <h3><a href="{{ url_for('view_post', post_id=post.id) }}">{{ post.title }}</a></h3>
+    <p>{{ post.content | truncate(100) }}</p>
+    <p class="post-meta">
+        By {{ post.username }} on {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+        {% if post.created_at != post.updated_at %}(Updated: {{ post.updated_at.strftime('%Y-%m-%d %H:%M') }}){% endif %}
+    </p>
+</div>
+{% endfor %}
+{% else %}
+<p>게시물이 없습니다. 첫 글을 작성해보세요!</p>
+{% endif %}
+{% endblock %}
